@@ -1,103 +1,126 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Strawberry Valley 🍓</title>
+    <!-- Google Fonts + Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-primary:#fff; --bg-secondary:#f8fafc;
+            --text-primary:#1e293b; --text-secondary:#64748b;
+            --border:#e2e8f0; --accent:#4CAF50; --accent-hover:#45a049;
+            --shadow:0 10px 15px rgba(0,0,0,0.1),0 4px 6px rgba(0,0,0,0.1);
+            --radius:1rem; --bw:4px; --fs-input:1.125rem; --fs-btn:1.125rem;
+            --transition: all 0.3s ease-out;
         }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
-            min-height: 100vh;
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html,body{height:100%;background:linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);font-family:'Inter',sans-serif}
+        body{
+            display:flex;align-items:flex-start;justify-content:center;
+            min-height:100vh;padding:2rem 0;overflow-y:auto;
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
         }
+        .hidden{display:none!important}
 
-        .container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        .login-screen {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-        }
-
-        .game-screen {
-            display: none;
+        .panel{
+            max-width:400px;width:90%;margin:0 auto;
+            padding:1.5rem 2rem;background:var(--bg-primary);
+            border:var(--bw) solid var(--border);border-radius:var(--radius);
+            box-shadow:var(--shadow);display:flex;flex-direction:column;
+            align-items:center;position:relative;
         }
 
         .logo {
-            font-size: 3em;
-            margin-bottom: 20px;
+            font-size: 4em;
+            margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .title {
-            font-size: 2.5em;
-            color: #2F4F4F;
-            margin-bottom: 30px;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        h2{font-size:1.75rem;color:var(--text-primary);margin-bottom:1rem;font-weight:600;text-align:center}
+
+        /* Auth Form Styles */
+        .auth-form{width:100%;display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1rem;margin-top:2rem}
+        .form-input{
+            font-size:var(--fs-input);padding:0.75rem 1rem;
+            border:var(--bw) solid var(--border);border-radius:var(--radius);
+            background:var(--bg-secondary);color:var(--text-primary);
+            transition:var(--transition);outline:none;width:100%;box-sizing:border-box;
+        }
+        .form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(76,175,80,0.1)}
+        
+        .pwd-wrapper{position:relative;width:100%}
+        .pwd-wrapper input{padding-right:4rem;width:100%}
+        .pwd-toggle{
+            position:absolute;top:50%;right:1rem;transform:translateY(-50%);
+            background:none;border:none;color:var(--accent);cursor:pointer;
+            font-size:0.875rem;transition:var(--transition);
+        }
+        .pwd-toggle:hover{color:var(--accent-hover)}
+        
+        .forgot-link{
+            text-align:center;color:var(--accent);font-size:0.875rem;
+            margin:-0.5rem 0 1rem;text-decoration:none;transition:var(--transition);
+        }
+        .forgot-link:hover{color:var(--accent-hover)}
+        
+        .primary-btn{
+            width:100%;padding:0.75rem;background:var(--accent);
+            color:#fff;border:none;border-radius:var(--radius);
+            font-size:var(--fs-btn);cursor:pointer;transition:var(--transition);
+            font-weight:500;
+        }
+        .primary-btn:hover{background:var(--accent-hover);transform:translateY(-1px)}
+        .primary-btn:disabled{opacity:0.7;cursor:not-allowed}
+
+        .separator{width:100%;text-align:center;position:relative;margin:1rem 0;color:var(--text-secondary)}
+        .separator::before,.separator::after{
+            content:"";position:absolute;top:50%;width:40%;height:1px;background:var(--border);
+        }
+        .separator::before{left:0} .separator::after{right:0}
+        .separator span{background:var(--bg-primary);padding:0 0.5rem;position:relative}
+
+        .social-btns{width:100%;display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1rem}
+        .social-btn{
+            display:flex;align-items:center;justify-content:center;gap:0.75rem;
+            padding:0.75rem;border:var(--bw) solid var(--border);
+            border-radius:var(--radius);cursor:pointer;transition:var(--transition);
+            background:var(--bg-primary);font-weight:500;font-size:1rem;
+        }
+        .social-btn.google{border-color:#4285f4;color:#4285f4}
+        .social-btn.google:hover{background:#4285f4;color:#fff;transform:translateY(-1px)}
+
+        .icon{width:24px;height:24px;background-size:contain;background-repeat:no-repeat;flex-shrink:0}
+        .google-icon{background-image:url("https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg")}
+
+        .form-switch-text{font-size:0.9rem;color:var(--text-secondary);text-align:center}
+        .form-switch-text a{color:var(--accent);text-decoration:none;font-weight:500;margin:0 0.5rem;transition:var(--transition)}
+        .form-switch-text a:hover{color:var(--accent-hover)}
+
+        /* Loading Spinner */
+        .loading{
+            display:inline-block;width:20px;height:20px;border:2px solid #fff;
+            border-radius:50%;border-top-color:transparent;animation:spin 1s linear infinite;
+        }
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        /* Error Message */
+        .error-message{
+            background:#fef2f2;border:1px solid #fecaca;color:#dc2626;
+            padding:0.75rem;border-radius:var(--radius);margin-bottom:1rem;
+            font-size:0.875rem;text-align:center;
         }
 
-        .input-group {
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 15px;
-            border: 3px solid #4CAF50;
-            border-radius: 25px;
-            font-size: 16px;
-            text-align: center;
-            background: rgba(255,255,255,0.9);
-            outline: none;
-        }
-
-        .btn {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            min-width: 150px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
+        /* Game Styles */
+        .game-screen {
+            max-width: 400px;
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         .header {
@@ -247,13 +270,6 @@
             opacity: 0.6;
         }
 
-        .loading {
-            text-align: center;
-            padding: 20px;
-            font-size: 1.2em;
-            color: #2F4F4F;
-        }
-
         .progress-bar {
             width: 100%;
             height: 8px;
@@ -289,13 +305,19 @@
             opacity: 1;
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 10px;
+        @media (max-width: 768px) {
+            .panel {
+                max-width: 95%;
+                padding: 1rem 1.5rem;
+                margin: 0 auto;
             }
             
-            .title {
-                font-size: 2em;
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            body {
+                padding: 1rem 0;
             }
             
             .fields-container {
@@ -310,62 +332,85 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Login Screen -->
-        <div class="login-screen" id="loginScreen">
-            <div class="logo">🍓🌱</div>
-            <h1 class="title">Strawberry Valley</h1>
-            <div class="input-group">
-                <input type="text" id="usernameInput" placeholder="Dein Benutzername eingeben" maxlength="20">
+    <!-- Login Panel -->
+    <div id="loginPanel" class="panel">
+        <div class="logo">🍓🌱</div>
+        <h2 id="formTitle">Strawberry Valley</h2>
+        
+        <div id="errorMessage" class="error-message hidden"></div>
+        
+        <form id="authForm" class="auth-form">
+            <input type="email" id="email" class="form-input" placeholder="E‑Mail" required>
+            <div class="pwd-wrapper">
+                <input type="password" id="password" class="form-input" placeholder="Passwort" required>
+                <button type="button" id="togglePassword" class="pwd-toggle">Anzeigen</button>
             </div>
-            <button class="btn" onclick="login()">Spiel starten</button>
-            <div class="loading" id="loginLoading" style="display: none;">Lade Spiel...</div>
+            <a href="#" id="forgotPassword" class="forgot-link">Passwort vergessen?</a>
+            <button type="submit" id="submitBtn" class="primary-btn">
+                <span id="btnText">Spiel starten</span>
+                <span id="btnLoading" class="loading hidden"></span>
+            </button>
+        </form>
+        
+        <div class="separator"><span>ODER</span></div>
+        
+        <div class="social-btns">
+            <button id="googleLogin" class="social-btn google">
+                <div class="icon google-icon"></div>Mit Google anmelden
+            </button>
+        </div>
+        
+        <p class="form-switch-text">
+            <span id="loginPrompt">Noch kein Konto?</span>
+            <a href="#" id="toggleSignup">Registrieren</a>
+            <span id="registerPrompt" class="hidden">Bereits registriert?</span>
+            <a href="#" id="toggleSignin" class="hidden">Anmelden</a>
+        </p>
+    </div>
+
+    <!-- Game Screen -->
+    <div class="game-screen hidden" id="gameScreen">
+        <div class="header">
+            <div class="player-info">
+                <span class="username" id="playerName">Spieler</span>
+                <span class="money">💰 <span id="playerMoney">100</span></span>
+            </div>
+            <button class="primary-btn" onclick="logout()" style="font-size: 0.8em; padding: 8px 16px; margin-top: 10px;">Abmelden</button>
         </div>
 
-        <!-- Game Screen -->
-        <div class="game-screen" id="gameScreen">
-            <div class="header">
-                <div class="player-info">
-                    <span class="username" id="playerName">Spieler</span>
-                    <span class="money">💰 <span id="playerMoney">100</span></span>
+        <div class="fields-container" id="fieldsContainer">
+            <!-- Fields werden hier generiert -->
+        </div>
+
+        <div class="shop">
+            <h3 class="shop-title">🛍️ Shop</h3>
+            <div class="shop-items">
+                <button class="shop-item" onclick="buySeeds()">
+                    🌱 Samen<br>💰 10
+                </button>
+                <button class="shop-item" onclick="sellStrawberries()">
+                    🍓 Verkaufen<br>💰 25
+                </button>
+                <button class="shop-item" onclick="buyWater()">
+                    💧 Wasser<br>💰 5
+                </button>
+            </div>
+        </div>
+
+        <div class="inventory">
+            <h4 class="inventory-title">📦 Inventar</h4>
+            <div class="inventory-items">
+                <div class="inventory-item">
+                    <div class="inventory-icon">🌱</div>
+                    <div id="seedCount">0</div>
                 </div>
-                <button class="btn" onclick="saveGame()" style="font-size: 0.8em; padding: 8px 16px;">Speichern</button>
-            </div>
-
-            <div class="fields-container" id="fieldsContainer">
-                <!-- Fields werden hier generiert -->
-            </div>
-
-            <div class="shop">
-                <h3 class="shop-title">🛍️ Shop</h3>
-                <div class="shop-items">
-                    <button class="shop-item" onclick="buySeeds()">
-                        🌱 Samen<br>💰 10
-                    </button>
-                    <button class="shop-item" onclick="sellStrawberries()">
-                        🍓 Verkaufen<br>💰 25
-                    </button>
-                    <button class="shop-item" onclick="buyWater()">
-                        💧 Wasser<br>💰 5
-                    </button>
+                <div class="inventory-item">
+                    <div class="inventory-icon">🍓</div>
+                    <div id="strawberryCount">0</div>
                 </div>
-            </div>
-
-            <div class="inventory">
-                <h4 class="inventory-title">📦 Inventar</h4>
-                <div class="inventory-items">
-                    <div class="inventory-item">
-                        <div class="inventory-icon">🌱</div>
-                        <div id="seedCount">0</div>
-                    </div>
-                    <div class="inventory-item">
-                        <div class="inventory-icon">🍓</div>
-                        <div id="strawberryCount">0</div>
-                    </div>
-                    <div class="inventory-item">
-                        <div class="inventory-icon">💧</div>
-                        <div id="waterCount">3</div>
-                    </div>
+                <div class="inventory-item">
+                    <div class="inventory-icon">💧</div>
+                    <div id="waterCount">3</div>
                 </div>
             </div>
         </div>
@@ -375,11 +420,16 @@
 
     <!-- Firebase Configuration -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
+        // Import Firebase functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import {
+            getAuth, signInWithPopup, GoogleAuthProvider,
+            signInWithEmailAndPassword, createUserWithEmailAndPassword,
+            sendPasswordResetEmail, onAuthStateChanged, signOut
+        } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBI7wVhY1AqZk2MZ6Dqzn9J3YKYFP6KOTw",
             authDomain: "strawberry-valley.firebaseapp.com",
@@ -392,11 +442,14 @@
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
 
         // Game State
         let gameState = {
-            username: '',
+            uid: '',
+            email: '',
             money: 100,
             seeds: 5,
             strawberries: 0,
@@ -411,60 +464,180 @@
             ]
         };
 
-        // Global functions
-        window.login = async function() {
-            const username = document.getElementById('usernameInput').value.trim();
-            if (!username) {
-                showNotification('Bitte gib einen Benutzernamen ein!');
+        // UI Elements
+        const errorDiv = document.getElementById('errorMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnLoading = document.getElementById('btnLoading');
+
+        // Error handling
+        const showError = (message) => {
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+        };
+
+        const hideError = () => {
+            errorDiv.classList.add('hidden');
+        };
+
+        // Loading state
+        const setLoading = (loading) => {
+            submitBtn.disabled = loading;
+            btnText.classList.toggle('hidden', loading);
+            btnLoading.classList.toggle('hidden', !loading);
+        };
+
+        // Toggle Login/Signup
+        let isSignup = false;
+        const updateUI = () => {
+            document.getElementById('loginPrompt').classList.toggle('hidden', isSignup);
+            document.getElementById('toggleSignup').classList.toggle('hidden', isSignup);
+            document.getElementById('registerPrompt').classList.toggle('hidden', !isSignup);
+            document.getElementById('toggleSignin').classList.toggle('hidden', !isSignup);
+            btnText.textContent = isSignup ? 'Registrieren' : 'Spiel starten';
+            hideError();
+        };
+
+        document.getElementById('toggleSignup').onclick = e => {
+            e.preventDefault();
+            isSignup = true;
+            updateUI();
+        };
+
+        document.getElementById('toggleSignin').onclick = e => {
+            e.preventDefault();
+            isSignup = false;
+            updateUI();
+        };
+
+        updateUI();
+
+        // Social Login
+        document.getElementById('googleLogin').onclick = () => {
+            signInWithPopup(auth, googleProvider).catch(e => showError('Google-Anmeldung fehlgeschlagen: ' + e.message));
+        };
+
+        // E-Mail/Passwort Auth
+        document.getElementById('authForm').onsubmit = async e => {
+            e.preventDefault();
+            const email = e.target.email.value.trim();
+            const pw = e.target.password.value;
+            
+            if (!email || !pw) {
+                showError('Bitte alle Felder ausfüllen');
                 return;
             }
 
-            document.getElementById('loginLoading').style.display = 'block';
-            
             try {
-                await loadGame(username);
-                gameState.username = username;
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('gameScreen').style.display = 'block';
-                document.getElementById('playerName').textContent = username;
-                updateDisplay();
-                startGameLoop();
-            } catch (error) {
-                console.error('Login error:', error);
-                showNotification('Fehler beim Laden des Spiels');
+                hideError();
+                setLoading(true);
+                
+                if (isSignup) {
+                    await createUserWithEmailAndPassword(auth, email, pw);
+                } else {
+                    await signInWithEmailAndPassword(auth, email, pw);
+                }
+            } catch(err) {
+                let errorMessage = 'Ein Fehler ist aufgetreten';
+                switch (err.code) {
+                    case 'auth/email-already-in-use': errorMessage = 'Diese E-Mail wird bereits verwendet'; break;
+                    case 'auth/weak-password': errorMessage = 'Das Passwort ist zu schwach'; break;
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password': errorMessage = 'Ungültige E-Mail oder Passwort'; break;
+                    case 'auth/invalid-email': errorMessage = 'Ungültige E-Mail-Adresse'; break;
+                    case 'auth/too-many-requests': errorMessage = 'Zu viele Versuche. Bitte später erneut versuchen.'; break;
+                    default: errorMessage = err.message;
+                }
+                showError(errorMessage);
+            } finally {
+                setLoading(false);
             }
-            
-            document.getElementById('loginLoading').style.display = 'none';
         };
 
-        window.saveGame = async function() {
+        // Passwort anzeigen/verbergen
+        document.getElementById('togglePassword').onclick = () => {
+            const pw = document.getElementById('password');
+            const btn = document.getElementById('togglePassword');
+            if (pw.type === 'password') {
+                pw.type = 'text';
+                btn.textContent = 'Verbergen';
+            } else {
+                pw.type = 'password';
+                btn.textContent = 'Anzeigen';
+            }
+        };
+
+        // Passwort-Reset
+        document.getElementById('forgotPassword').onclick = async e => {
+            e.preventDefault();
+            const mail = document.getElementById('email').value.trim();
+            if (!mail) return showError('Bitte E-Mail eingeben');
+            
             try {
-                const userRef = doc(db, 'players', gameState.username);
+                await sendPasswordResetEmail(auth, mail);
+                errorDiv.style.background = '#d4edda';
+                errorDiv.style.borderColor = '#c3e6cb';
+                errorDiv.style.color = '#155724';
+                errorDiv.textContent = 'Reset-Mail gesendet';
+                errorDiv.classList.remove('hidden');
+                setTimeout(() => {
+                    errorDiv.classList.add('hidden');
+                    errorDiv.style.background = '';
+                    errorDiv.style.borderColor = '';
+                    errorDiv.style.color = '';
+                }, 5000);
+            } catch(e) {
+                showError('Fehler: ' + e.message);
+            }
+        };
+
+        // Game Functions
+        window.logout = async function() {
+            try {
+                await saveGame();
+                await signOut(auth);
+                showNotification('Erfolgreich abgemeldet! 👋');
+            } catch (error) {
+                console.error('Logout error:', error);
+                showNotification('Fehler beim Abmelden');
+            }
+        };
+
+        async function saveGame() {
+            if (!gameState.uid) return;
+            
+            try {
+                const userRef = doc(db, 'players', gameState.uid);
                 await setDoc(userRef, {
                     ...gameState,
                     lastSaved: serverTimestamp()
-                });
+                }, { merge: true });
                 showNotification('Spiel gespeichert! 💾');
             } catch (error) {
                 console.error('Save error:', error);
                 showNotification('Fehler beim Speichern');
             }
-        };
+        }
 
-        async function loadGame(username) {
+        async function loadGame(user) {
             try {
-                const userRef = doc(db, 'players', username);
+                const userRef = doc(db, 'players', user.uid);
                 const userSnap = await getDoc(userRef);
                 
                 if (userSnap.exists()) {
                     const data = userSnap.data();
-                    gameState = { ...gameState, ...data, username };
+                    gameState = { ...gameState, ...data, uid: user.uid, email: user.email };
                     showNotification('Willkommen zurück! 🎮');
                 } else {
+                    gameState.uid = user.uid;
+                    gameState.email = user.email;
                     showNotification('Neues Spiel gestartet! 🌟');
                 }
             } catch (error) {
                 console.error('Load error:', error);
+                gameState.uid = user.uid;
+                gameState.email = user.email;
                 showNotification('Neues Spiel gestartet! 🌟');
             }
         }
@@ -473,14 +646,12 @@
             const field = gameState.fields[fieldId];
             
             if (field.state === 'empty' && gameState.seeds > 0) {
-                // Plant seed
                 field.state = 'seed';
                 field.plantTime = Date.now();
                 field.progress = 0;
                 gameState.seeds--;
                 showNotification('Samen gepflanzt! 🌱');
             } else if (field.state === 'growing' && gameState.water > 0) {
-                // Water plant
                 field.progress += 25;
                 gameState.water--;
                 showNotification('Pflanze gegossen! 💧');
@@ -491,7 +662,6 @@
                     showNotification('Erdbeere ist reif! 🍓');
                 }
             } else if (field.state === 'ready') {
-                // Harvest strawberry
                 field.state = 'empty';
                 field.plantTime = null;
                 field.progress = 0;
@@ -550,6 +720,7 @@
             document.getElementById('seedCount').textContent = gameState.seeds;
             document.getElementById('strawberryCount').textContent = gameState.strawberries;
             document.getElementById('waterCount').textContent = gameState.water;
+            document.getElementById('playerName').textContent = gameState.email?.split('@')[0] || 'Spieler';
             
             updateFields();
         }
@@ -610,13 +781,27 @@
         }
 
         function startGameLoop() {
-            setInterval(gameLoop, 5000); // Update every 5 seconds
+            setInterval(gameLoop, 5000);
             setInterval(() => {
-                if (gameState.username) {
+                if (gameState.uid) {
                     saveGame();
                 }
-            }, 30000); // Auto-save every 30 seconds
+            }, 30000);
         }
+
+        // Auth state observer
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                await loadGame(user);
+                document.getElementById('loginPanel').style.display = 'none';
+                document.getElementById('gameScreen').classList.remove('hidden');
+                updateDisplay();
+                startGameLoop();
+            } else {
+                document.getElementById('loginPanel').style.display = 'flex';
+                document.getElementById('gameScreen').classList.add('hidden');
+            }
+        });
 
         // Initialize display
         updateFields();
