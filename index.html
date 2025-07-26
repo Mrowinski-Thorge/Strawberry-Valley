@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strawberry Valley 🍓</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            min-height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .game-screen {
+            display: none;
+        }
+
+        .logo {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .title {
+            font-size: 2.5em;
+            color: #2F4F4F;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid #4CAF50;
+            border-radius: 25px;
+            font-size: 16px;
+            text-align: center;
+            background: rgba(255,255,255,0.9);
+            outline: none;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            min-width: 150px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .header {
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .money {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .username {
+            font-weight: bold;
+            color: #2F4F4F;
+        }
+
+        .fields-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .field {
+            background: rgba(139, 69, 19, 0.8);
+            border: 3px solid #8B4513;
+            border-radius: 15px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .field:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .field-content {
+            font-size: 3em;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .field-status {
+            font-size: 0.8em;
+            color: white;
+            background: rgba(0,0,0,0.6);
+            padding: 5px 10px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+
+        .shop {
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .shop-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #2F4F4F;
+        }
+
+        .shop-items {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .shop-item {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .shop-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .inventory {
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .inventory-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #2F4F4F;
+        }
+
+        .inventory-items {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .inventory-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .inventory-icon {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .empty-field {
+            color: #8B4513;
+            opacity: 0.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+            color: #2F4F4F;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .title {
+                font-size: 2em;
+            }
+            
+            .fields-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .field-content {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div class="login-screen" id="loginScreen">
+            <div class="logo">🍓🌱</div>
+            <h1 class="title">Strawberry Valley</h1>
+            <div class="input-group">
+                <input type="text" id="usernameInput" placeholder="Dein Benutzername eingeben" maxlength="20">
+            </div>
+            <button class="btn" onclick="login()">Spiel starten</button>
+            <div class="loading" id="loginLoading" style="display: none;">Lade Spiel...</div>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="game-screen" id="gameScreen">
+            <div class="header">
+                <div class="player-info">
+                    <span class="username" id="playerName">Spieler</span>
+                    <span class="money">💰 <span id="playerMoney">100</span></span>
+                </div>
+                <button class="btn" onclick="saveGame()" style="font-size: 0.8em; padding: 8px 16px;">Speichern</button>
+            </div>
+
+            <div class="fields-container" id="fieldsContainer">
+                <!-- Fields werden hier generiert -->
+            </div>
+
+            <div class="shop">
+                <h3 class="shop-title">🛍️ Shop</h3>
+                <div class="shop-items">
+                    <button class="shop-item" onclick="buySeeds()">
+                        🌱 Samen<br>💰 10
+                    </button>
+                    <button class="shop-item" onclick="sellStrawberries()">
+                        🍓 Verkaufen<br>💰 25
+                    </button>
+                    <button class="shop-item" onclick="buyWater()">
+                        💧 Wasser<br>💰 5
+                    </button>
+                </div>
+            </div>
+
+            <div class="inventory">
+                <h4 class="inventory-title">📦 Inventar</h4>
+                <div class="inventory-items">
+                    <div class="inventory-item">
+                        <div class="inventory-icon">🌱</div>
+                        <div id="seedCount">0</div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-icon">🍓</div>
+                        <div id="strawberryCount">0</div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-icon">💧</div>
+                        <div id="waterCount">3</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <!-- Firebase Configuration -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBI7wVhY1AqZk2MZ6Dqzn9J3YKYFP6KOTw",
+            authDomain: "strawberry-valley.firebaseapp.com",
+            projectId: "strawberry-valley",
+            storageBucket: "strawberry-valley.firebasestorage.app",
+            messagingSenderId: "509646037112",
+            appId: "1:509646037112:web:e192a4f917779d3f02cd8d",
+            measurementId: "G-2F2K4XFKRV"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Game State
+        let gameState = {
+            username: '',
+            money: 100,
+            seeds: 5,
+            strawberries: 0,
+            water: 3,
+            fields: [
+                { id: 0, state: 'empty', plantTime: null, progress: 0 },
+                { id: 1, state: 'empty', plantTime: null, progress: 0 },
+                { id: 2, state: 'empty', plantTime: null, progress: 0 },
+                { id: 3, state: 'empty', plantTime: null, progress: 0 },
+                { id: 4, state: 'empty', plantTime: null, progress: 0 },
+                { id: 5, state: 'empty', plantTime: null, progress: 0 }
+            ]
+        };
+
+        // Global functions
+        window.login = async function() {
+            const username = document.getElementById('usernameInput').value.trim();
+            if (!username) {
+                showNotification('Bitte gib einen Benutzernamen ein!');
+                return;
+            }
+
+            document.getElementById('loginLoading').style.display = 'block';
+            
+            try {
+                await loadGame(username);
+                gameState.username = username;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('gameScreen').style.display = 'block';
+                document.getElementById('playerName').textContent = username;
+                updateDisplay();
+                startGameLoop();
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotification('Fehler beim Laden des Spiels');
+            }
+            
+            document.getElementById('loginLoading').style.display = 'none';
+        };
+
+        window.saveGame = async function() {
+            try {
+                const userRef = doc(db, 'players', gameState.username);
+                await setDoc(userRef, {
+                    ...gameState,
+                    lastSaved: serverTimestamp()
+                });
+                showNotification('Spiel gespeichert! 💾');
+            } catch (error) {
+                console.error('Save error:', error);
+                showNotification('Fehler beim Speichern');
+            }
+        };
+
+        async function loadGame(username) {
+            try {
+                const userRef = doc(db, 'players', username);
+                const userSnap = await getDoc(userRef);
+                
+                if (userSnap.exists()) {
+                    const data = userSnap.data();
+                    gameState = { ...gameState, ...data, username };
+                    showNotification('Willkommen zurück! 🎮');
+                } else {
+                    showNotification('Neues Spiel gestartet! 🌟');
+                }
+            } catch (error) {
+                console.error('Load error:', error);
+                showNotification('Neues Spiel gestartet! 🌟');
+            }
+        }
+
+        window.clickField = function(fieldId) {
+            const field = gameState.fields[fieldId];
+            
+            if (field.state === 'empty' && gameState.seeds > 0) {
+                // Plant seed
+                field.state = 'seed';
+                field.plantTime = Date.now();
+                field.progress = 0;
+                gameState.seeds--;
+                showNotification('Samen gepflanzt! 🌱');
+            } else if (field.state === 'growing' && gameState.water > 0) {
+                // Water plant
+                field.progress += 25;
+                gameState.water--;
+                showNotification('Pflanze gegossen! 💧');
+                
+                if (field.progress >= 100) {
+                    field.state = 'ready';
+                    field.progress = 100;
+                    showNotification('Erdbeere ist reif! 🍓');
+                }
+            } else if (field.state === 'ready') {
+                // Harvest strawberry
+                field.state = 'empty';
+                field.plantTime = null;
+                field.progress = 0;
+                gameState.strawberries++;
+                showNotification('Erdbeere geerntet! 🍓');
+            }
+            
+            updateDisplay();
+        };
+
+        window.buySeeds = function() {
+            if (gameState.money >= 10) {
+                gameState.money -= 10;
+                gameState.seeds += 3;
+                showNotification('3 Samen gekauft! 🌱');
+                updateDisplay();
+            } else {
+                showNotification('Nicht genug Geld! 💸');
+            }
+        };
+
+        window.sellStrawberries = function() {
+            if (gameState.strawberries > 0) {
+                const earnings = gameState.strawberries * 25;
+                gameState.money += earnings;
+                gameState.strawberries = 0;
+                showNotification(`Erdbeeren für ${earnings}💰 verkauft!`);
+                updateDisplay();
+            } else {
+                showNotification('Keine Erdbeeren zum Verkaufen! 🍓');
+            }
+        };
+
+        window.buyWater = function() {
+            if (gameState.money >= 5) {
+                gameState.money -= 5;
+                gameState.water += 2;
+                showNotification('2 Wasser gekauft! 💧');
+                updateDisplay();
+            } else {
+                showNotification('Nicht genug Geld! 💸');
+            }
+        };
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        function updateDisplay() {
+            document.getElementById('playerMoney').textContent = gameState.money;
+            document.getElementById('seedCount').textContent = gameState.seeds;
+            document.getElementById('strawberryCount').textContent = gameState.strawberries;
+            document.getElementById('waterCount').textContent = gameState.water;
+            
+            updateFields();
+        }
+
+        function updateFields() {
+            const container = document.getElementById('fieldsContainer');
+            container.innerHTML = '';
+            
+            gameState.fields.forEach((field, index) => {
+                const fieldDiv = document.createElement('div');
+                fieldDiv.className = 'field';
+                fieldDiv.onclick = () => clickField(index);
+                
+                let content = '';
+                let status = '';
+                let progressBar = '';
+                
+                switch (field.state) {
+                    case 'empty':
+                        content = '<div class="field-content empty-field">🟫</div>';
+                        status = 'Leer - Samen pflanzen';
+                        break;
+                    case 'seed':
+                        content = '<div class="field-content">🌱</div>';
+                        status = 'Gießen zum Wachsen';
+                        progressBar = `<div class="progress-bar"><div class="progress-fill" style="width: ${field.progress}%"></div></div>`;
+                        break;
+                    case 'growing':
+                        content = '<div class="field-content">🫘</div>';
+                        status = `Wachsend ${field.progress}%`;
+                        progressBar = `<div class="progress-bar"><div class="progress-fill" style="width: ${field.progress}%"></div></div>`;
+                        break;
+                    case 'ready':
+                        content = '<div class="field-content">🍓</div>';
+                        status = 'Bereit zur Ernte!';
+                        progressBar = `<div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>`;
+                        break;
+                }
+                
+                fieldDiv.innerHTML = `
+                    ${content}
+                    <div class="field-status">${status}</div>
+                    ${progressBar}
+                `;
+                
+                container.appendChild(fieldDiv);
+            });
+        }
+
+        function gameLoop() {
+            gameState.fields.forEach(field => {
+                if (field.state === 'seed' && field.progress < 50) {
+                    field.state = 'growing';
+                }
+            });
+            
+            updateDisplay();
+        }
+
+        function startGameLoop() {
+            setInterval(gameLoop, 5000); // Update every 5 seconds
+            setInterval(() => {
+                if (gameState.username) {
+                    saveGame();
+                }
+            }, 30000); // Auto-save every 30 seconds
+        }
+
+        // Initialize display
+        updateFields();
+    </script>
+</body>
+</html>
