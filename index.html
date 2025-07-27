@@ -6,6 +6,7 @@
     <title>Strawberry Valley 🍓</title>
     <!-- Google Fonts + Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
     <style>
         :root {
             --bg-primary:#fff; --bg-secondary:#f8fafc;
@@ -27,6 +28,7 @@
         }
         .hidden{display:none!important}
 
+        /* Login Panel Styles */
         .panel{
             max-width:400px;width:90%;margin:0 auto;
             padding:1.5rem 2rem;background:var(--bg-primary);
@@ -115,52 +117,173 @@
             font-size:0.875rem;text-align:center;
         }
 
-        /* Game Styles */
-        .game-screen {
-            max-width: 400px;
-            width: 90%;
-            margin: 0 auto;
-            padding: 20px;
+        /* Game Layout */
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 100%;
+            overflow: hidden;
         }
 
-        .header {
-            background: rgba(255,255,255,0.9);
+        /* Inventory Panel (Top Left) */
+        .inventory-panel {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.95);
             border-radius: 20px;
             padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+            z-index: 100;
         }
 
-        .player-info {
+        .inventory-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            font-weight: bold;
+            color: #2F4F4F;
         }
 
-        .money {
-            font-size: 1.2em;
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .inventory-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 8px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 12px;
+            min-width: 60px;
+        }
+
+        .inventory-icon {
+            font-size: 2em;
+            margin-bottom: 2px;
+        }
+
+        .inventory-count {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #2F4F4F;
+        }
+
+        /* Money Display */
+        .money-display {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 1.1em;
             font-weight: bold;
             color: #FFD700;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        .username {
-            font-weight: bold;
+        /* Settings Panel (Top Right) */
+        .settings-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .settings-btn {
+            background: rgba(255,255,255,0.95);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+        }
+
+        .settings-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .settings-btn .material-icons {
+            font-size: 24px;
             color: #2F4F4F;
+        }
+
+        .settings-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+            min-width: 200px;
+            display: none;
+        }
+
+        .settings-menu.show {
+            display: block;
+        }
+
+        .user-info {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 10px;
+        }
+
+        .user-email {
+            font-size: 0.9em;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 10px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #b91c1c;
+        }
+
+        /* Game Fields (Center) */
+        .game-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
         }
 
         .fields-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            margin-bottom: 20px;
+            padding: 20px;
         }
 
         .field {
-            background: rgba(139, 69, 19, 0.8);
+            background: rgba(139, 69, 19, 0.9);
             border: 3px solid #8B4513;
-            border-radius: 15px;
+            border-radius: 20px;
             aspect-ratio: 1;
             display: flex;
             flex-direction: column;
@@ -170,11 +293,12 @@
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(10px);
         }
 
         .field:hover {
             transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
 
         .field-content {
@@ -186,95 +310,17 @@
         .field-status {
             font-size: 0.8em;
             color: white;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.7);
             padding: 5px 10px;
             border-radius: 10px;
             margin-top: 5px;
         }
 
-        .shop {
-            background: rgba(255,255,255,0.9);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .shop-title {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-align: center;
-            color: #2F4F4F;
-        }
-
-        .shop-items {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .shop-item {
-            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-            text-align: center;
-            min-width: 80px;
-        }
-
-        .shop-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .inventory {
-            background: rgba(255,255,255,0.9);
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .inventory-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-align: center;
-            color: #2F4F4F;
-        }
-
-        .inventory-items {
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-        }
-
-        .inventory-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .inventory-icon {
-            font-size: 2em;
-            margin-bottom: 5px;
-        }
-
-        .empty-field {
-            color: #8B4513;
-            opacity: 0.6;
-        }
-
         .progress-bar {
-            width: 100%;
-            height: 8px;
+            width: 90%;
+            height: 6px;
             background: rgba(255,255,255,0.3);
-            border-radius: 4px;
+            border-radius: 3px;
             overflow: hidden;
             margin-top: 5px;
         }
@@ -282,29 +328,93 @@
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #4CAF50, #8BC34A);
-            border-radius: 4px;
+            border-radius: 3px;
             transition: width 0.3s ease;
         }
 
+        .empty-field {
+            color: #8B4513;
+            opacity: 0.7;
+        }
+
+        /* Action Panel (Bottom Left) */
+        .action-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .action-btn {
+            background: rgba(255,255,255,0.95);
+            border: none;
+            border-radius: 20px;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.2);
+        }
+
+        .action-btn .emoji {
+            font-size: 2em;
+            margin-bottom: 2px;
+        }
+
+        .action-btn .price {
+            font-size: 0.7em;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .action-btn:disabled:hover {
+            transform: none;
+        }
+
+        /* Notification */
         .notification {
             position: fixed;
-            top: 20px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            background: rgba(76, 175, 80, 0.9);
+            transform: translate(-50%, -50%);
+            background: rgba(76, 175, 80, 0.95);
             color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 15px 25px;
+            border-radius: 25px;
             font-weight: bold;
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.3s;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
 
         .notification.show {
             opacity: 1;
         }
 
+        /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .panel {
                 max-width: 95%;
@@ -312,21 +422,58 @@
                 margin: 0 auto;
             }
             
-            h2 {
-                font-size: 1.5rem;
+            .inventory-panel {
+                top: 10px;
+                left: 10px;
+                padding: 10px;
             }
             
-            body {
-                padding: 1rem 0;
+            .settings-panel {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .action-panel {
+                bottom: 10px;
+                left: 10px;
+            }
+            
+            .action-btn {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .action-btn .emoji {
+                font-size: 1.5em;
             }
             
             .fields-container {
-                grid-template-columns: repeat(2, 1fr);
+                padding: 10px;
                 gap: 10px;
             }
             
             .field-content {
                 font-size: 2.5em;
+            }
+            
+            .game-center {
+                width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .inventory-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 5px;
+            }
+            
+            .inventory-item {
+                padding: 5px;
+                min-width: 50px;
+            }
+            
+            .inventory-icon {
+                font-size: 1.5em;
             }
         }
     </style>
@@ -369,51 +516,66 @@
     </div>
 
     <!-- Game Screen -->
-    <div class="game-screen hidden" id="gameScreen">
-        <div class="header">
-            <div class="player-info">
-                <span class="username" id="playerName">Spieler</span>
-                <span class="money">💰 <span id="playerMoney">100</span></span>
+    <div class="game-container hidden" id="gameScreen">
+        <!-- Inventory Panel (Top Left) -->
+        <div class="inventory-panel">
+            <div class="inventory-header">
+                <span>📦 Inventar</span>
             </div>
-            <button class="primary-btn" onclick="manualSave()" style="font-size: 0.8em; padding: 8px 16px; margin-right: 10px;">Speichern</button>
-            <button class="primary-btn" onclick="logout()" style="font-size: 0.8em; padding: 8px 16px;">Abmelden</button>
-        </div>
-
-        <div class="fields-container" id="fieldsContainer">
-            <!-- Fields werden hier generiert -->
-        </div>
-
-        <div class="shop">
-            <h3 class="shop-title">🛍️ Shop</h3>
-            <div class="shop-items">
-                <button class="shop-item" onclick="buySeeds()">
-                    🌱 Samen<br>💰 10
-                </button>
-                <button class="shop-item" onclick="sellStrawberries()">
-                    🍓 Verkaufen<br>💰 25
-                </button>
-                <button class="shop-item" onclick="buyWater()">
-                    💧 Wasser<br>💰 5
-                </button>
+            <div class="money-display">
+                <span>💰</span>
+                <span id="playerMoney">100</span>
             </div>
-        </div>
-
-        <div class="inventory">
-            <h4 class="inventory-title">📦 Inventar</h4>
-            <div class="inventory-items">
+            <div class="inventory-grid">
                 <div class="inventory-item">
                     <div class="inventory-icon">🌱</div>
-                    <div id="seedCount">0</div>
+                    <div class="inventory-count" id="seedCount">0</div>
                 </div>
                 <div class="inventory-item">
                     <div class="inventory-icon">🍓</div>
-                    <div id="strawberryCount">0</div>
+                    <div class="inventory-count" id="strawberryCount">0</div>
                 </div>
                 <div class="inventory-item">
                     <div class="inventory-icon">💧</div>
-                    <div id="waterCount">3</div>
+                    <div class="inventory-count" id="waterCount">3</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Settings Panel (Top Right) -->
+        <div class="settings-panel">
+            <button class="settings-btn" onclick="toggleSettings()">
+                <span class="material-icons">settings</span>
+            </button>
+            <div class="settings-menu" id="settingsMenu">
+                <div class="user-info">
+                    <div class="user-email" id="userEmail">spieler@email.com</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Abmelden</button>
+            </div>
+        </div>
+
+        <!-- Game Fields (Center) -->
+        <div class="game-center">
+            <div class="fields-container" id="fieldsContainer">
+                <!-- Fields werden hier generiert -->
+            </div>
+        </div>
+
+        <!-- Action Panel (Bottom Left) -->
+        <div class="action-panel">
+            <button class="action-btn" onclick="buySeeds()" id="buySeeds">
+                <div class="emoji">🌱</div>
+                <div class="price">💰10</div>
+            </button>
+            <button class="action-btn" onclick="buyWater()" id="buyWater">
+                <div class="emoji">💧</div>
+                <div class="price">💰5</div>
+            </button>
+            <button class="action-btn" onclick="sellStrawberries()" id="sellStrawberries">
+                <div class="emoji">🍓</div>
+                <div class="price">💰25</div>
+            </button>
         </div>
     </div>
 
@@ -464,6 +626,8 @@
                 { id: 5, state: 'empty', plantTime: null, progress: 0 }
             ]
         };
+
+        let autoSaveInterval = null;
 
         // UI Elements
         const errorDiv = document.getElementById('errorMessage');
@@ -604,18 +768,29 @@
             }
         };
 
-        // Game Functions
-        window.manualSave = async function() {
-            console.log('Manuelles Speichern angefordert');
-            await saveGame();
+        // Settings Menu
+        window.toggleSettings = function() {
+            const menu = document.getElementById('settingsMenu');
+            menu.classList.toggle('show');
         };
 
+        // Close settings menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('settingsMenu');
+            const btn = document.querySelector('.settings-btn');
+            
+            if (!menu.contains(e.target) && !btn.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
+
+        // Game Functions
         window.logout = async function() {
-            showNotification('Speichere Spiel vor Abmeldung... 💾');
+            showNotification('Speichere Spiel... 💾');
             try {
-                // Erst speichern
+                // Erst automatisch speichern
                 await saveGame();
-                console.log('Spiel gespeichert, melde ab...');
+                console.log('Spiel vor Abmeldung gespeichert');
                 
                 // Dann abmelden
                 await signOut(auth);
@@ -636,7 +811,6 @@
                 console.log('Speichere Spiel für UID:', gameState.uid);
                 const userRef = doc(db, 'players', gameState.uid);
                 
-                // Bereinige gameState vor dem Speichern
                 const saveData = {
                     uid: gameState.uid,
                     email: gameState.email,
@@ -649,11 +823,9 @@
                 };
                 
                 await setDoc(userRef, saveData, { merge: true });
-                console.log('Spiel erfolgreich gespeichert');
-                showNotification('Spiel gespeichert! 💾');
+                console.log('Spiel automatisch gespeichert');
             } catch (error) {
-                console.error('Save error:', error);
-                showNotification('Fehler beim Speichern: ' + error.message);
+                console.error('Auto-save error:', error);
             }
         }
 
@@ -667,7 +839,6 @@
                     const data = userSnap.data();
                     console.log('Geladene Daten:', data);
                     
-                    // Merge mit Standard-Werten für fehlende Felder
                     gameState = {
                         uid: user.uid,
                         email: user.email,
@@ -703,7 +874,6 @@
                             { id: 5, state: 'empty', plantTime: null, progress: 0 }
                         ]
                     };
-                    // Initialen Spielstand speichern
                     await saveGame();
                     showNotification('Neues Spiel gestartet! 🌟');
                 }
@@ -711,7 +881,6 @@
                 console.error('Load error:', error);
                 showNotification('Fehler beim Laden: ' + error.message);
                 
-                // Fallback für Fehler
                 gameState = {
                     uid: user.uid,
                     email: user.email,
@@ -759,8 +928,6 @@
             }
             
             updateDisplay();
-            // Auto-save nach Aktion
-            saveGame();
         };
 
         window.buySeeds = function() {
@@ -769,7 +936,6 @@
                 gameState.seeds += 3;
                 showNotification('3 Samen gekauft! 🌱');
                 updateDisplay();
-                saveGame();
             } else {
                 showNotification('Nicht genug Geld! 💸');
             }
@@ -782,7 +948,6 @@
                 gameState.strawberries = 0;
                 showNotification(`Erdbeeren für ${earnings}💰 verkauft!`);
                 updateDisplay();
-                saveGame();
             } else {
                 showNotification('Keine Erdbeeren zum Verkaufen! 🍓');
             }
@@ -794,7 +959,6 @@
                 gameState.water += 2;
                 showNotification('2 Wasser gekauft! 💧');
                 updateDisplay();
-                saveGame();
             } else {
                 showNotification('Nicht genug Geld! 💸');
             }
@@ -814,7 +978,12 @@
             document.getElementById('seedCount').textContent = gameState.seeds;
             document.getElementById('strawberryCount').textContent = gameState.strawberries;
             document.getElementById('waterCount').textContent = gameState.water;
-            document.getElementById('playerName').textContent = gameState.email?.split('@')[0] || 'Spieler';
+            document.getElementById('userEmail').textContent = gameState.email || 'Spieler';
+            
+            // Update button states
+            document.getElementById('buySeeds').disabled = gameState.money < 10;
+            document.getElementById('buyWater').disabled = gameState.money < 5;
+            document.getElementById('sellStrawberries').disabled = gameState.strawberries === 0;
             
             updateFields();
         }
@@ -876,11 +1045,20 @@
 
         function startGameLoop() {
             setInterval(gameLoop, 5000);
-            setInterval(() => {
+            
+            // Auto-save alle 30 Sekunden
+            autoSaveInterval = setInterval(() => {
                 if (gameState.uid) {
                     saveGame();
                 }
             }, 30000);
+        }
+
+        function stopGameLoop() {
+            if (autoSaveInterval) {
+                clearInterval(autoSaveInterval);
+                autoSaveInterval = null;
+            }
         }
 
         // Auth state observer
@@ -906,8 +1084,12 @@
                 }
             } else {
                 console.log('User abgemeldet, zeige Login...');
+                stopGameLoop();
                 document.getElementById('loginPanel').style.display = 'flex';
                 document.getElementById('gameScreen').classList.add('hidden');
+                
+                // Settings Menu schließen
+                document.getElementById('settingsMenu').classList.remove('show');
                 
                 // Gamestate zurücksetzen
                 gameState = {
