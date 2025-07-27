@@ -375,7 +375,8 @@
                 <span class="username" id="playerName">Spieler</span>
                 <span class="money">💰 <span id="playerMoney">100</span></span>
             </div>
-            <button class="primary-btn" onclick="logout()" style="font-size: 0.8em; padding: 8px 16px; margin-top: 10px;">Abmelden</button>
+            <button class="primary-btn" onclick="manualSave()" style="font-size: 0.8em; padding: 8px 16px; margin-right: 10px;">Speichern</button>
+            <button class="primary-btn" onclick="logout()" style="font-size: 0.8em; padding: 8px 16px;">Abmelden</button>
         </div>
 
         <div class="fields-container" id="fieldsContainer">
@@ -514,8 +515,19 @@
         updateUI();
 
         // Social Login
-        document.getElementById('googleLogin').onclick = () => {
-            signInWithPopup(auth, googleProvider).catch(e => showError('Google-Anmeldung fehlgeschlagen: ' + e.message));
+        document.getElementById('googleLogin').onclick = async () => {
+            try {
+                setLoading(true);
+                console.log('Starte Google-Anmeldung...');
+                const result = await signInWithPopup(auth, googleProvider);
+                console.log('Google-Anmeldung erfolgreich:', result.user.email);
+                hideError();
+            } catch (error) {
+                console.error('Google-Anmeldung Fehler:', error);
+                showError('Google-Anmeldung fehlgeschlagen: ' + error.message);
+            } finally {
+                setLoading(false);
+            }
         };
 
         // E-Mail/Passwort Auth
@@ -593,52 +605,129 @@
         };
 
         // Game Functions
+        window.manualSave = async function() {
+            console.log('Manuelles Speichern angefordert');
+            await saveGame();
+        };
+
         window.logout = async function() {
+            showNotification('Speichere Spiel vor Abmeldung... 💾');
             try {
+                // Erst speichern
                 await saveGame();
+                console.log('Spiel gespeichert, melde ab...');
+                
+                // Dann abmelden
                 await signOut(auth);
                 showNotification('Erfolgreich abgemeldet! 👋');
             } catch (error) {
                 console.error('Logout error:', error);
-                showNotification('Fehler beim Abmelden');
+                showNotification('Fehler beim Abmelden: ' + error.message);
             }
         };
 
         async function saveGame() {
-            if (!gameState.uid) return;
+            if (!gameState.uid) {
+                console.log('Kein User UID - kann nicht speichern');
+                return;
+            }
             
             try {
+                console.log('Speichere Spiel für UID:', gameState.uid);
                 const userRef = doc(db, 'players', gameState.uid);
-                await setDoc(userRef, {
-                    ...gameState,
+                
+                // Bereinige gameState vor dem Speichern
+                const saveData = {
+                    uid: gameState.uid,
+                    email: gameState.email,
+                    money: gameState.money,
+                    seeds: gameState.seeds,
+                    strawberries: gameState.strawberries,
+                    water: gameState.water,
+                    fields: gameState.fields,
                     lastSaved: serverTimestamp()
-                }, { merge: true });
+                };
+                
+                await setDoc(userRef, saveData, { merge: true });
+                console.log('Spiel erfolgreich gespeichert');
                 showNotification('Spiel gespeichert! 💾');
             } catch (error) {
                 console.error('Save error:', error);
-                showNotification('Fehler beim Speichern');
+                showNotification('Fehler beim Speichern: ' + error.message);
             }
         }
 
         async function loadGame(user) {
             try {
+                console.log('Lade Spiel für User:', user.uid, user.email);
                 const userRef = doc(db, 'players', user.uid);
                 const userSnap = await getDoc(userRef);
                 
                 if (userSnap.exists()) {
                     const data = userSnap.data();
-                    gameState = { ...gameState, ...data, uid: user.uid, email: user.email };
+                    console.log('Geladene Daten:', data);
+                    
+                    // Merge mit Standard-Werten für fehlende Felder
+                    gameState = {
+                        uid: user.uid,
+                        email: user.email,
+                        money: data.money || 100,
+                        seeds: data.seeds || 5,
+                        strawberries: data.strawberries || 0,
+                        water: data.water || 3,
+                        fields: data.fields || [
+                            { id: 0, state: 'empty', plantTime: null, progress: 0 },
+                            { id: 1, state: 'empty', plantTime: null, progress: 0 },
+                            { id: 2, state: 'empty', plantTime: null, progress: 0 },
+                            { id: 3, state: 'empty', plantTime: null, progress: 0 },
+                            { id: 4, state: 'empty', plantTime: null, progress: 0 },
+                            { id: 5, state: 'empty', plantTime: null, progress: 0 }
+                        ]
+                    };
                     showNotification('Willkommen zurück! 🎮');
                 } else {
-                    gameState.uid = user.uid;
-                    gameState.email = user.email;
+                    console.log('Neuer User - erstelle Standard-Spiel');
+                    gameState = {
+                        uid: user.uid,
+                        email: user.email,
+                        money: 100,
+                        seeds: 5,
+                        strawberries: 0,
+                        water: 3,
+                        fields: [
+                            { id: 0, state: 'empty', plantTime: null, progress: 0 },
+                            { id: 1, state: 'empty', plantTime: null, progress: 0 },
+                            { id: 2, state: 'empty', plantTime: null, progress: 0 },
+                            { id: 3, state: 'empty', plantTime: null, progress: 0 },
+                            { id: 4, state: 'empty', plantTime: null, progress: 0 },
+                            { id: 5, state: 'empty', plantTime: null, progress: 0 }
+                        ]
+                    };
+                    // Initialen Spielstand speichern
+                    await saveGame();
                     showNotification('Neues Spiel gestartet! 🌟');
                 }
             } catch (error) {
                 console.error('Load error:', error);
-                gameState.uid = user.uid;
-                gameState.email = user.email;
-                showNotification('Neues Spiel gestartet! 🌟');
+                showNotification('Fehler beim Laden: ' + error.message);
+                
+                // Fallback für Fehler
+                gameState = {
+                    uid: user.uid,
+                    email: user.email,
+                    money: 100,
+                    seeds: 5,
+                    strawberries: 0,
+                    water: 3,
+                    fields: [
+                        { id: 0, state: 'empty', plantTime: null, progress: 0 },
+                        { id: 1, state: 'empty', plantTime: null, progress: 0 },
+                        { id: 2, state: 'empty', plantTime: null, progress: 0 },
+                        { id: 3, state: 'empty', plantTime: null, progress: 0 },
+                        { id: 4, state: 'empty', plantTime: null, progress: 0 },
+                        { id: 5, state: 'empty', plantTime: null, progress: 0 }
+                    ]
+                };
             }
         }
 
@@ -670,6 +759,8 @@
             }
             
             updateDisplay();
+            // Auto-save nach Aktion
+            saveGame();
         };
 
         window.buySeeds = function() {
@@ -678,6 +769,7 @@
                 gameState.seeds += 3;
                 showNotification('3 Samen gekauft! 🌱');
                 updateDisplay();
+                saveGame();
             } else {
                 showNotification('Nicht genug Geld! 💸');
             }
@@ -690,6 +782,7 @@
                 gameState.strawberries = 0;
                 showNotification(`Erdbeeren für ${earnings}💰 verkauft!`);
                 updateDisplay();
+                saveGame();
             } else {
                 showNotification('Keine Erdbeeren zum Verkaufen! 🍓');
             }
@@ -701,6 +794,7 @@
                 gameState.water += 2;
                 showNotification('2 Wasser gekauft! 💧');
                 updateDisplay();
+                saveGame();
             } else {
                 showNotification('Nicht genug Geld! 💸');
             }
@@ -791,15 +885,47 @@
 
         // Auth state observer
         onAuthStateChanged(auth, async (user) => {
+            console.log('Auth-Status geändert:', user ? user.email : 'Nicht angemeldet');
+            
             if (user) {
-                await loadGame(user);
-                document.getElementById('loginPanel').style.display = 'none';
-                document.getElementById('gameScreen').classList.remove('hidden');
-                updateDisplay();
-                startGameLoop();
+                try {
+                    console.log('User angemeldet, lade Spiel...');
+                    await loadGame(user);
+                    
+                    console.log('Zeige Spiel-Interface...');
+                    document.getElementById('loginPanel').style.display = 'none';
+                    document.getElementById('gameScreen').classList.remove('hidden');
+                    
+                    updateDisplay();
+                    startGameLoop();
+                    
+                    console.log('Spiel erfolgreich gestartet');
+                } catch (error) {
+                    console.error('Fehler beim Spielstart:', error);
+                    showNotification('Fehler beim Spielstart: ' + error.message);
+                }
             } else {
+                console.log('User abgemeldet, zeige Login...');
                 document.getElementById('loginPanel').style.display = 'flex';
                 document.getElementById('gameScreen').classList.add('hidden');
+                
+                // Gamestate zurücksetzen
+                gameState = {
+                    uid: '',
+                    email: '',
+                    money: 100,
+                    seeds: 5,
+                    strawberries: 0,
+                    water: 3,
+                    fields: [
+                        { id: 0, state: 'empty', plantTime: null, progress: 0 },
+                        { id: 1, state: 'empty', plantTime: null, progress: 0 },
+                        { id: 2, state: 'empty', plantTime: null, progress: 0 },
+                        { id: 3, state: 'empty', plantTime: null, progress: 0 },
+                        { id: 4, state: 'empty', plantTime: null, progress: 0 },
+                        { id: 5, state: 'empty', plantTime: null, progress: 0 }
+                    ]
+                };
             }
         });
 
